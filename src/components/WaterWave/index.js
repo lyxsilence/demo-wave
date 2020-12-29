@@ -3,11 +3,11 @@ import Wave from "./wave";
 import Retina from "./retina";
 function WaterWave(props) {
 	let [isDrawContainer, setIsDrawContainer] = useState(false);
+	let [nowRange, setNowRange] = useState(0);
+	let [rangeValue] = useState(60);
 	// let isDrawContainer = false;
 	const canvasEl = useRef(null);
 	
-	let [nowRange, setNowRange] = useState(0);
-	let [rangeValue] = useState(60);
 	const canvasWidth = 300;
 	const canvasHeight = 300;
 	const radius = canvasWidth / 2;
@@ -16,19 +16,9 @@ function WaterWave(props) {
 		const canvas = canvasEl.current;
 		canvas.width = canvasWidth;
 		canvas.height = canvasHeight;
+		const ctx = canvasEl.current.getContext("2d");
+
 		Retina.run(canvas);
-		function drawContainer(ctx) {
-			const type = props.type;
-			if (type === "circle") {
-				drawCircle(ctx);
-			} else if (type === "star") {
-				drawStar(ctx);
-			} else if (type === "roundRect") {
-				drawRoundRect(ctx);
-			} else if (type === "heart") {
-				drawHeart(ctx);
-			}
-		}
 		const wave1 = new Wave({
 			canvasWidth: canvasWidth, // 轴长
 			canvasHeight: canvasHeight, // 轴高
@@ -49,7 +39,6 @@ function WaterWave(props) {
 		});
 
 		function draw() {
-			const ctx = canvasEl.current.getContext("2d");
 			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 			if (!isDrawContainer) {
 				drawContainer(ctx);
@@ -72,9 +61,20 @@ function WaterWave(props) {
 			window.requestAnimationFrame(draw);
 		}
 		draw();
-	}, []);
+	}, [Wave]);
 
-
+	function drawContainer(ctx) {
+		const type = props.type;
+		if (type === "circle") {
+			drawCircle(ctx);
+		} else if (type === "star") {
+			drawStar(ctx);
+		} else if (type === "roundRect") {
+			drawRoundRect(ctx);
+		} else if (type === "heart") {
+			drawHeart(ctx);
+		}
+	}
 	function drawBackground(ctx) {
 		const r = radius;
 		const cR = r;
@@ -86,9 +86,6 @@ function WaterWave(props) {
 		ctx.fillStyle = grd;
 		ctx.fill();
 	}
-
-
-
 
 	function drawSin(ctx, xOffset = 0, nowRange = 0) {
 		const points = [];
